@@ -28,11 +28,19 @@ class Solution {
     }
 
     int digits = len - numOfLeadZero;
+<<<<<<< HEAD
+=======
+    //System.out.println("digits is: " + digits);
+>>>>>>> 5c2a182cc7cf6413eea4edeb07dd8781ea9fe423
 
     // compute reversed int from arr.
     for (int i = 0; i < digits; i++) {
       res = res + arr[i] * (long) Math.pow(10, digits - 1 - i);
     }
+<<<<<<< HEAD
+=======
+    //System.out.println("raw res is: " + res);
+>>>>>>> 5c2a182cc7cf6413eea4edeb07dd8781ea9fe423
 
     // overflow.
     if ((res > max)|| (res < min)) {
@@ -47,7 +55,10 @@ class Solution {
     int[] arr = {123, -123, 120, 0, 483647, 2147483647, -2147483648};
 
     Solution s = new Solution();
+<<<<<<< HEAD
     
+=======
+>>>>>>> 5c2a182cc7cf6413eea4edeb07dd8781ea9fe423
     for (int i = 0 ; i < 7; i++) {
       res = s.reverse(arr[i]);
       System.out.println(res);
