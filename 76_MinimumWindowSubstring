@@ -1,4 +1,4 @@
-/**************Time Limit Exceeded**************/
+/************** Time Limit Exceeded **************/
 
 class Solution {
     public String minWindow(String s, String t) {
@@ -58,6 +58,342 @@ class Solution {
             r++;
         }
         return -1;
+    }
+    
+    private List<Locator> filterS(final String s, final HashMap<Character, Integer> tMap) {
+        List<Locator> filtered = new ArrayList<>();
+        
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (tMap.containsKey(c)) {
+                filtered.add(new Locator(i, c));
+            }
+        }
+        return filtered;
+    }
+    
+    private HashMap<Character, Integer> str2Map(final String t) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        if(t == null || t.isEmpty()) return map;
+        for(int i = 0; i < t.length(); i++) {
+            char c = t.charAt(i);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        return map;
+    }
+    
+    private class Locator {
+        int  index;  // index of the character in string "s"
+        char ch;     // character
+        
+        // Constructor.
+        public Locator(final int index, final char ch) {
+            this.index = index;
+            this.ch = ch;
+        }
+    }
+}
+
+
+/************** Accepted(1000+ms) **************/
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if(t == null || t.isEmpty() || s == null || s.isEmpty()) {
+            return "";
+        }
+        HashMap<Character, Integer> tMap = str2Map(t);  // Convert t to hash map.
+        List<Locator> filteredS = filterS(s, tMap);     // Filter s by chars in t.
+        
+        // Search 1st window
+        int l = 0;  // l, r are index of item in filtered s.
+        int r = findWindow(l, filteredS, tMap, t.length());  // find 1st window in filtered s containing t: l = 0, find r = ?
+        if(r == -1) {  // string s does not contain all chars in t
+            return "";
+        }
+        
+        int minSize = windowSize(l, r, filteredS);
+        String minWin = window(l, r, filteredS, s);
+            
+        // Slide window to find minimum window in filteredS.
+        while(l <= filteredS.size() - t.length()) {
+            char c = filteredS.get(l).ch;
+            l++;
+            r = slideWindow(l, r, c, tMap.get(c), filteredS);
+            
+            if(r < filteredS.size()) {
+                int winSize = windowSize(l, r, filteredS);
+                if(winSize < minSize) {
+                    minSize = winSize;
+                    minWin = window(l, r, filteredS, s);
+                }
+            }
+        }
+        return minWin;
+    }
+    
+    private int slideWindow(int l, int r, char c, int count, List<Locator> s) {
+        int numOfC = 0;
+        int i = l;
+        while(i < s.size()) {
+            if(s.get(i).ch == c) {
+                numOfC++;
+                if(numOfC == count) {
+                    return Math.max(r, i);
+                }
+            }
+            i++;
+        }
+        return i;
+    }
+    
+    private int windowSize(int l, int r, List<Locator> filteredS) {
+        return filteredS.get(r).index - filteredS.get(l).index + 1;
+    }
+    
+    private String window(int l, int r, List<Locator> filteredS, String s) {
+        return s.substring(filteredS.get(l).index, filteredS.get(r).index + 1);
+    }
+    
+    private int findWindow(int l, final List<Locator> s, final HashMap<Character, Integer> tMap, final int tSize) {
+        HashMap<Character, Integer> map = new HashMap<>(tMap);
+        int r = l;  // start searching from l
+        int num = 0;
+        while(r < s.size()) {
+            char c = s.get(r).ch;
+            int count = map.getOrDefault(c, 0);
+            if(count > 0) {
+                map.put(c, count-1);
+                num++;
+                if(num == tSize) {
+                    return r;
+                }
+            }
+            r++;
+        }
+        return -1;
+    }
+    
+    private List<Locator> filterS(final String s, final HashMap<Character, Integer> tMap) {
+        List<Locator> filtered = new ArrayList<>();
+        
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (tMap.containsKey(c)) {
+                filtered.add(new Locator(i, c));
+            }
+        }
+        return filtered;
+    }
+    
+    private HashMap<Character, Integer> str2Map(final String t) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        if(t == null || t.isEmpty()) return map;
+        for(int i = 0; i < t.length(); i++) {
+            char c = t.charAt(i);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        return map;
+    }
+    
+    private class Locator {
+        int  index;  // index of the character in string "s"
+        char ch;     // character
+        
+        // Constructor.
+        public Locator(final int index, final char ch) {
+            this.index = index;
+            this.ch = ch;
+        }
+    }
+}
+
+/************** Accepted(O(n^2)) **************/
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if(t == null || t.isEmpty() || s == null || s.isEmpty()) {
+            return "";
+        }
+        HashMap<Character, Integer> tMap = str2Map(t);  // Convert t to hash map.
+        List<Locator> filteredS = filterS(s, tMap);     // Filter s by chars in t.
+        
+        // Search 1st window
+        int l = 0;  // l, r are index of item in filtered s.
+        int r = findWindow(l, filteredS, tMap, t.length());  // find 1st window in filtered s containing t: l = 0, find r = ?
+        if(r == -1) {  // string s does not contain all chars in t
+            return "";
+        }
+        
+        int minSize = windowSize(l, r, filteredS);
+        int minL = l;
+        int minR = r;
+        //String minWin = window(l, r, filteredS, s);
+            
+        // Slide window to find minimum window in filteredS.
+        while(l <= filteredS.size() - t.length()) {
+            char c = filteredS.get(l).ch;
+            l++;
+            r = slideWindow(l, r, c, tMap.get(c), filteredS);
+            
+            if(r < filteredS.size()) {
+                int winSize = windowSize(l, r, filteredS);
+                if(winSize < minSize) {
+                    minSize = winSize;
+                    minL = l;
+                    minR = r;
+                    //minWin = window(l, r, filteredS, s);
+                }
+            }
+        }
+        return window(minL, minR, filteredS, s);
+    }
+    
+    private int slideWindow(int l, int r, char c, int count, List<Locator> s) {
+        int numOfC = 0;
+        int i = l;
+        while(i < s.size()) {
+            if(s.get(i).ch == c) {
+                numOfC++;
+                if(numOfC == count) {
+                    return Math.max(r, i);
+                }
+            }
+            i++;
+        }
+        return i;
+    }
+    
+    private int windowSize(int l, int r, List<Locator> filteredS) {
+        return filteredS.get(r).index - filteredS.get(l).index + 1;
+    }
+    
+    private String window(int l, int r, List<Locator> filteredS, String s) {
+        return s.substring(filteredS.get(l).index, filteredS.get(r).index + 1);
+    }
+    
+    private int findWindow(int l, final List<Locator> s, final HashMap<Character, Integer> tMap, final int tSize) {
+        HashMap<Character, Integer> map = new HashMap<>(tMap);
+        int r = l;  // start searching from l
+        int num = 0;
+        while(r < s.size()) {
+            char c = s.get(r).ch;
+            int count = map.getOrDefault(c, 0);
+            if(count > 0) {
+                map.put(c, count-1);
+                num++;
+                if(num == tSize) {
+                    return r;
+                }
+            }
+            r++;
+        }
+        return -1;
+    }
+    
+    private List<Locator> filterS(final String s, final HashMap<Character, Integer> tMap) {
+        List<Locator> filtered = new ArrayList<>();
+        
+        for(int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (tMap.containsKey(c)) {
+                filtered.add(new Locator(i, c));
+            }
+        }
+        return filtered;
+    }
+    
+    private HashMap<Character, Integer> str2Map(final String t) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        if(t == null || t.isEmpty()) return map;
+        for(int i = 0; i < t.length(); i++) {
+            char c = t.charAt(i);
+            map.put(c, map.getOrDefault(c, 0) + 1);
+        }
+        return map;
+    }
+    
+    private class Locator {
+        int  index;  // index of the character in string "s"
+        char ch;     // character
+        
+        // Constructor.
+        public Locator(final int index, final char ch) {
+            this.index = index;
+            this.ch = ch;
+        }
+    }
+}
+
+/************** Accepted(O(n), use hash map to store window info) **************/
+
+class Solution {
+    public String minWindow(String s, String t) {
+        if(t == null || t.isEmpty() || s == null || s.isEmpty()) {
+            return "";
+        }
+        HashMap<Character, Integer> tMap = str2Map(t);  // Convert t to hash map.
+        List<Locator> filteredS = filterS(s, tMap);     // Filter s by chars in t.
+        final int N = filteredS.size();
+        
+        // Search 1st window
+        int l = 0;  // l, r are index of item in filtered s.
+        int r = 0;
+        HashMap<Character, Integer> fsMap = new HashMap<>();
+        int target = tMap.size();
+        while(r < N) {
+            char c = filteredS.get(r).ch;
+            int count = fsMap.getOrDefault(c, 0);
+            fsMap.put(c, count + 1);
+            if(count+1 == tMap.get(c)) {
+                target--;
+                if(target == 0) {
+                    break;
+                }
+            }
+            r++;
+        }
+        if(target > 0) {  // string s does not contain all chars in t
+            return "";
+        }
+        int minSize = windowSize(l, r, filteredS);
+        int minL = l;
+        int minR = r;
+        
+        
+        // Slide window to find minimum window in filteredS.
+        while(l <= N - t.length()) {
+            char remove = filteredS.get(l).ch;
+            l++;
+            fsMap.put(remove, fsMap.get(remove)-1);
+
+            while (fsMap.get(remove) < tMap.get(remove)) {
+                r++;
+                if(r >= N) {
+                    break;
+                }
+                char cc = filteredS.get(r).ch;
+                fsMap.put(cc, fsMap.getOrDefault(cc, 0)+1);
+            }
+            
+            if(r < N) {
+                int winSize = windowSize(l, r, filteredS);
+                if(winSize < minSize) {
+                    minSize = winSize;
+                    minL = l;
+                    minR = r;
+                }
+            }
+        }
+        return window(minL, minR, filteredS, s);
+    }
+    
+    private int windowSize(int l, int r, List<Locator> filteredS) {
+        return filteredS.get(r).index - filteredS.get(l).index + 1;
+    }
+    
+    private String window(int l, int r, List<Locator> filteredS, String s) {
+        return s.substring(filteredS.get(l).index, filteredS.get(r).index + 1);
     }
     
     private List<Locator> filterS(final String s, final HashMap<Character, Integer> tMap) {
