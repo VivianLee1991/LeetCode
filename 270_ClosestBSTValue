@@ -1,0 +1,24 @@
+/************** Edge case considered (only one bound was found) **************/
+
+class Solution {
+    public int closestValue(TreeNode root, double target) {
+        int low = Integer.MAX_VALUE;
+        int high = Integer.MIN_VALUE;
+        
+        while(root != null) {
+            if(target < root.val) {
+                high = root.val;
+                root = root.left;
+            } else if(target > root.val) {
+                low = root.val;
+                root = root.right;
+            } else {
+                low = root.val;
+                high = root.val;
+                break;
+            }
+        }
+        
+        return (Math.abs(target-low) <= Math.abs(high-target)) ? low : high;
+    }   
+}
