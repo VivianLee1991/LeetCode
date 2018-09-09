@@ -1,0 +1,41 @@
+/************** Recursive **************/
+
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> ans = new LinkedList<>();
+        inorderRecursive(root, ans);
+        return ans;
+    }
+    
+    private void inorderRecursive(TreeNode root, List<Integer> list) {
+        if(root == null) return;
+        inorderRecursive(root.left, list);
+        list.add(root.val);
+        inorderRecursive(root.right, list);
+    }  
+}
+
+/************** Iterative **************/
+
+class Solution {
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> ans = new LinkedList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        pushAllLeft(root, stack);
+        while(!stack.isEmpty()) {
+            TreeNode cur = stack.pop();
+            ans.add(cur.val);
+            if(cur.right != null) {
+                pushAllLeft(cur.right, stack);
+            }
+        }
+        return ans;
+    } 
+    
+    private void pushAllLeft(TreeNode root, Stack<TreeNode> stack) {
+        while(root != null) {
+            stack.push(root);
+            root = root.left;
+        }
+    }
+}
