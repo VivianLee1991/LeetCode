@@ -1,0 +1,100 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List<Integer> closestKValues(TreeNode root, double target, int k) {
+        List<Integer> ans = new LinkedList<>();
+        if(root == null || k == 0) return ans;
+        
+        // Stacks to keep track of predecessor and successor.
+        Stack<TreeNode> preStack = new Stack<>();
+        Stack<TreeNode> sucStack = new Stack<>();
+        initialStacks(root, target, preStack, sucStack);
+        
+        Integer next = 0;
+        Integer pre = getPredecessor(preStack);
+        Integer suc = getSuccessor(sucStack);
+        
+        while (k > 0) {
+            if (pre != null && suc != null) {
+                if(target - pre <= suc - target) {
+                    next = pre;
+                    pre = getPredecessor(preStack);
+                } else {
+                    next = suc;
+                    suc = getSuccessor(sucStack);
+                }
+            } else if (pre != null) {
+                next = pre;
+                pre = getPredecessor(preStack);
+            } else {
+                next = suc;
+                
+                suc = getSuccessor(sucStack);
+            }
+            ans.add(next);
+            k--;
+        }
+        return ans;
+    }
+    
+    private Integer getPredecessor(Stack<TreeNode> preStack) {
+        if(preStack.isEmpty()) {
+            return null;
+        }
+        TreeNode preNode = preStack.pop();
+        int pre = preNode.val;
+        
+        // Update stack.
+        TreeNode next = preNode.left;
+        while(next != null) {
+            preStack.push(next);
+            next = next.right;
+        }
+        
+        return Integer.valueOf(pre);
+    }
+    
+    private Integer getSuccessor(Stack<TreeNode> sucStack) {
+        if(sucStack.isEmpty()) {
+            return null;
+        }
+        TreeNode sucNode = sucStack.pop();
+        int suc = sucNode.val;
+        
+        // Update stack.
+        TreeNode next = sucNode.right;
+        while(next != null) {
+            sucStack.push(next);
+            next = next.left;
+        }
+        
+        return Integer.valueOf(suc);
+    }
+    
+    private void initialStacks(TreeNode root, double target, Stack<TreeNode> preStack, Stack<TreeNode> sucStack) {
+        while(root != null) {
+            if (root.val < target) {
+                preStack.push(root);
+                root = root.right;
+            } else if (root.val > target) {
+                sucStack.push(root);
+                root = root.left;
+            } else {
+                sucStack.push(root);
+                TreeNode pre = root.left;
+                while(pre != null) {
+                    preStack.push(pre);
+                    pre = pre.right;
+                }
+                break;
+            }
+        }
+    }
+}

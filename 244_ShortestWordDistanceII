@@ -1,0 +1,76 @@
+class WordDistance {
+    // map: word -> list of index
+    private HashMap<String, List<Integer>> map = new HashMap<>();
+    
+    public WordDistance(String[] words) {
+        // read words to map
+        // Note: better way to do this using hashmap's method? putIfAbsent (returns existing or computed value)
+        for(int i = 0; i < words.length; i++) {
+            map.computeIfAbsent(words[i], k -> new ArrayList<>()).add(i);
+            
+            // map.putIfAbsent(words[i], new ArrayList<>()); (returns null when value is absent, or else returns current value)
+            // map.get(words[i]).add(i);
+            
+            // if(!map.containsKey(words[i])) {
+            //     List<Integer> indice = new ArrayList<>();
+            //     indice.add(i);
+            //     map.put(words[i], indice);
+            // } else {
+            //     map.get(words[i]).add(i);
+            // } 
+        }
+    }
+    
+    public int shortest(String word1, String word2) {
+        List<Integer> list1 = map.get(word1);
+        List<Integer> list2 = map.get(word2);
+        
+        // sort lists by first integer
+        List<Integer> first = null;
+        List<Integer> second = null;
+        if(list1.get(0) < list2.get(0)) {
+            first = list1;
+            second = list2;
+        } else {
+            first = list2;
+            second = list1;
+        }
+        
+        int h1 = first.get(first.size()-1);
+        int l2 = second.get(0);
+        
+        if(h1 < l2) {
+            return l2-h1; 
+        } else {
+            return compare(first, second);
+        }
+    }
+    
+    // this idea is similar to merge two linked list.
+    // Note: list must not be changed, cause this method could be called repeatedly.
+    
+    private int compare(List<Integer> list1, List<Integer> list2) {
+        int min = Integer.MAX_VALUE;
+        int i1 = 0;
+        int i2 = 0;
+        
+        while(i1 < list1.size() && i2 < list2.size()) {
+            int head1 = list1.get(i1);
+            int head2 = list2.get(i2);
+            if(head1 < head2) {
+                min = Math.min(min, head2 - head1);
+                i1++;
+            } else {
+                min = Math.min(min, head1 - head2);
+                i2++;
+            }
+        }
+        return min;
+    }
+}
+
+/**
+ * Your WordDistance object will be instantiated and called as such:
+ * WordDistance obj = new WordDistance(words);
+ * int param_1 = obj.shortest(word1,word2);
+ */
