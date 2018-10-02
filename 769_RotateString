@@ -1,0 +1,27 @@
+/***************************** Wrong Solution *********************************/
+
+class Solution {
+    public boolean rotateString(String A, String B) {
+        if(A.length() != B.length()) {
+            return false;
+        }
+        
+        if(A.isEmpty()) {  // Attention: Edge case.
+            return B.isEmpty(); 
+        }
+        
+        int n = A.length();
+        int offset = B.indexOf(A.charAt(0)); // Error: A and B could have duplicate chars!
+        
+        if(offset == -1) {
+            return false;
+        }
+        
+        for(int i = 1; i < n; i++) {
+            if(A.charAt(i) != B.charAt((i + offset) % n)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
