@@ -25,3 +25,17 @@ class Solution {
         return true;
     }
 }
+
+
+/***************************** Best Solution *********************************/
+
+class Solution {
+    public boolean rotateString(String A, String B) {
+        if(A.length() != B.length()) {
+            return false;
+        }
+        StringBuilder doubleA = new StringBuilder(A);
+        doubleA.append(A);
+        return doubleA.toString().indexOf(B) != -1;
+    }
+}
