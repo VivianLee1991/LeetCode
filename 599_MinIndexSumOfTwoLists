@@ -1,0 +1,66 @@
+
+/***************************** Original Solution *********************************/
+
+class Solution {
+    public String[] findRestaurant(String[] list1, String[] list2) {
+        List<String> favorite = new LinkedList<>();
+        
+        // name -> index
+        Map<String, Integer> map = new HashMap<>();
+        for(int i = 0; i < list1.length; i++) {
+            map.put(list1[i], i);
+        }
+        
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i < list2.length; i++) { // optimize on index
+            if(map.containsKey(list2[i])) {
+                int rank = i + map.get(list2[i]);
+                if(rank < min) {
+                    min = rank;
+                    favorite.clear();
+                    favorite.add(list2[i]);
+                } else if (rank == min) {
+                    favorite.add(list2[i]);
+                }
+            }
+        }
+            
+        int count = favorite.size();       // Convert List to Array
+        String[] ans = new String[count];
+        for(int i = 0; i < count; i++) {
+            ans[i] = favorite.get(i);
+        }
+        return ans;
+    }
+}
+
+/***************************** Optimized Solution *********************************/
+
+class Solution {
+    public String[] findRestaurant(String[] list1, String[] list2) {
+        List<String> favorite = new ArrayList<>();
+        
+        // name -> index
+        Map<String, Integer> map = new HashMap<>();
+        for(int i = 0; i < list1.length; i++) {
+            map.put(list1[i], i);
+        }
+        
+        int min = Integer.MAX_VALUE;
+        
+        for(int i = 0; i < list2.length && i <= min; i++) {
+            if(map.containsKey(list2[i])) {
+                int rank = i + map.get(list2[i]);
+                if(rank < min) {
+                    min = rank;
+                    favorite.clear();
+                    favorite.add(list2[i]);
+                } else if (rank == min) {
+                    favorite.add(list2[i]);
+                }
+            }
+        }
+            
+        return favorite.toArray(new String[favorite.size()]);
+    }
+}
