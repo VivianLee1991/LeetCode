@@ -1,0 +1,159 @@
+/***************************** build graph & BFS *********************************/
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        if(wordList == null || wordList.isEmpty() || !wordList.contains(endWord)) {
+            return 0;
+        }
+        // Convert to undirectional graph
+        // nodes: beginWord + wordList
+        // pb: how to represent the graph?
+        if(!wordList.contains(beginWord)) {  // wordList might already contain beginWord
+            wordList.add(beginWord);
+        }
+        Map<String, HashSet<String>> graph = buildGraph(wordList);
+        
+        // BFS: find shortest path from s(beginWord) -> t(endWord)
+        return distance(graph, beginWord, endWord);
+    }
+    
+    private int distance(final Map<String, HashSet<String>> graph, final String begin, final String end) {
+        int ans = 0;
+        // BFS
+        Set<String> visited = new HashSet<String>();
+        Queue<String> readyToVisit = new LinkedList<String>(); 
+        Queue<Integer> levels = new LinkedList<>();
+        
+        readyToVisit.offer(begin);
+        levels.offer(1);
+        
+        while(!readyToVisit.isEmpty()) {
+            String curWord = readyToVisit.poll();
+            int curLevel = levels.poll();
+            visited.add(curWord);
+            
+            if(end.equals(curWord)) {
+                ans = curLevel;
+                break;
+            }
+            
+            // add neighboring words to queue
+            if(graph.get(curWord) != null) {
+                for(String word : graph.get(curWord)) {
+                    if(!visited.contains(word)) {
+                        readyToVisit.offer(word);
+                        levels.offer(curLevel + 1);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+    
+    // graph: node -> neighboring nodes
+    private Map<String, HashSet<String>> buildGraph(List<String> words) {
+        Map<String, HashSet<String>> graph = new HashMap<String, HashSet<String>>();
+        String[] wordArr = words.toArray(new String[0]);
+        int n = wordArr.length;
+        
+        for(int i = 0; i < n; i++) {
+            for(int j = i+1; j < n; j++) {
+                if(isNeighbor(wordArr[i], wordArr[j])) {
+                    updateGraph(graph, wordArr[i], wordArr[j]);
+                }
+            }
+        }
+        return graph;
+    }
+    
+    private boolean isNeighbor(final String word1, final String word2) {
+        int diff = 0;
+        
+        for(int i = 0; i < word1.length(); i++) {
+            if(word1.charAt(i) != word2.charAt(i)) {
+                diff++;
+            }
+            if(diff > 1) {
+                break;
+            }
+        }
+        return diff == 1;
+    }
+    
+    private void updateGraph(Map<String, HashSet<String>> graph, final String word1, final String word2) {
+        graph.computeIfAbsent(word1, k -> new HashSet<String>()).add(word2);
+        graph.computeIfAbsent(word2, k -> new HashSet<String>()).add(word1);
+    }
+}
+
+
+/***************************** Dijstra (using heap) *********************************/
+
+class Solution {
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        if(wordList == null || wordList.size() == 0 || !wordList.contains(endWord)) {
+            return 0;
+        }
+        
+        if(!wordList.contains(beginWord)) {
+            wordList.add(beginWord);
+        }
+        
+        PriorityQueue<Node> heap = buildHeap(wordList, beginWord);
+        while(!heap.isEmpty()) {
+            Node min = heap.poll();
+            if(endWord.equals(min.word) && min.distance < Integer.MAX_VALUE) {
+                return min.distance + 1;
+            }
+            heap = updateHeap(heap, min);
+        }
+        return 0;
+    }
+    
+    private PriorityQueue<Node> updateHeap(PriorityQueue<Node> heap, Node min) {
+        //System.out.printf("min: [%s, %d]\n", min.word, min.distance);
+        PriorityQueue<Node> newHeap = new PriorityQueue(heap); // copy the heap
+        for(Node node : heap) {  // we can't modify the heap when looping through it.
+            if(isNeighbor(node.word, min.word)) {
+                newHeap.remove(node);
+                newHeap.add(new Node(node.word, Math.min(node.distance, min.distance+1)));
+            }
+        }
+        return newHeap;
+    }
+    
+    private boolean isNeighbor(final String w1, final String w2) {
+        int diff = 0;
+        for(int i = 0; i < w1.length(); i++) {
+            if(w1.charAt(i) != w2.charAt(i)) {
+                diff++;
+            }
+            if(diff > 1) {
+                break;
+            }
+        }
+        return diff == 1;
+    }
+    
+    private PriorityQueue<Node> buildHeap(final List<String> words, final String beginWord) {
+        PriorityQueue<Node> heap = new PriorityQueue<>((n1, n2) -> n1.distance - n2.distance);
+        for(String word : words) {
+            if(beginWord.equals(word)) {
+                heap.add(new Node(word, 0));
+            } else {
+                heap.add(new Node(word, Integer.MAX_VALUE));
+            }  
+        }
+        return heap;
+    }
+    
+    private class Node {
+        String word;
+        int distance;
+        
+        Node(String word, int distance) {
+            this.word = word;
+            this.distance = distance;
+        }
+    }
+}
