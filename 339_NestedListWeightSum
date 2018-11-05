@@ -1,0 +1,32 @@
+/***************************** Solution *********************************/
+
+// The structure of the function follows the structure of the data!
+
+class Solution {
+    public int depthSum(List<NestedInteger> nestedList) {
+        return listSum(nestedList, 1);
+    }
+    
+    private int intSum(NestedInteger nestedInt, int depth) {
+        if(nestedInt == null) {
+            return 0;
+        }
+        
+        if(nestedInt.isInteger()) {
+            return depth*nestedInt.getInteger();
+        } else {
+            return listSum(nestedInt.getList(), depth+1);
+        }
+    }
+    
+    private int listSum(List<NestedInteger> nestedList, int depth) {
+        if(nestedList == null || nestedList.size() == 0) {
+            return 0;
+        }
+        
+        return nestedList.stream()
+            .mapToInt(ni -> intSum(ni, depth))
+            .sum();
+    }
+}
+

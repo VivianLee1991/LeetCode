@@ -1,0 +1,28 @@
+class Solution {
+    public List<Integer> topKFrequent(int[] nums, int k) {
+        // generate countmap: num -> counts, O(N)
+        // maintain a min heap (according to counts) of size k
+        // add first k entries to heap first, O(k)
+        // then if count > min, extract min and add count, O(nlogk)
+        // space saving O(k)
+        
+        // build a max heap of n  // O(n)
+        // poll max for k times   // O(klogn)
+
+        List<Integer> ans = new ArrayList<Integer>();
+        Map<Integer, Integer> map = new HashMap<>(); // num -> count
+        for(int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
+        }
+        
+        PriorityQueue<Map.Entry<Integer, Integer>> maxHeap = new PriorityQueue<>(
+            (e1, e2) -> e2.getValue() - e1.getValue()
+        );
+        maxHeap.addAll(map.entrySet());
+        
+        for(int i = 0; i < k; i++) {
+            ans.add(maxHeap.poll().getKey());
+        }
+        return ans;
+    }
+}

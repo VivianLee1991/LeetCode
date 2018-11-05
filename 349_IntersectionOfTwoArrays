@@ -81,3 +81,39 @@ class Solution {
         return arr;
     }
 }
+
+
+class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {     
+        List<Integer> intersect = new ArrayList<>();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        
+        int p = 0;
+        int q = 0;
+        while(p < nums1.length && q < nums2.length) {
+            if(nums1[p] < nums2[q]) {
+                p++;
+            } else if(nums1[p] > nums2[q]) {
+                q++;
+            } else {
+                if(intersect.size()==0 || nums1[p] != intersect.get(intersect.size()-1)) {
+                    intersect.add(nums1[p]);
+                }
+                p++;
+                q++;
+            }
+        }
+        
+        return toArray(intersect);
+    }
+
+    private int[] toArray(List<Integer> list) {
+        int n = list.size();
+        int[] arr = new int[n];
+        for(int i = 0; i < n; i++) {
+            arr[i] = list.get(i);
+        }
+        return arr;
+    }
+}

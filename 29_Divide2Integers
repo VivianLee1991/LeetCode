@@ -1,0 +1,39 @@
+class Solution {
+    // 3/4, -7/10, 7/(-9), 0/3, 0/(-3)
+    // 4/2, 4/-2, -4/2, -4/-2, 7/-3, -7/3, 7/3, -7/-3
+
+    // edge cases: 
+    // -2.....8/-1(overflow), 
+    // -2.....8/1(non-overflow), 
+    // 1/-2.....8 = 0
+    
+    public int divide(int dividend, int divisor) {
+        // overflow case
+        if(dividend == Integer.MIN_VALUE && divisor == -1) return Integer.MAX_VALUE;
+        
+        long n = Math.abs((long) dividend); // convert to positive longs.
+        long d = Math.abs((long) divisor);
+        
+        int div = dividePos(n, d);
+        
+        if((dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0)) {
+            return div;
+        } else {
+            return 0 - div;
+        }
+    }
+    
+    private int dividePos(long n, long d) {
+        if(n < d) { 
+            return 0;
+        }
+        
+        int multiplier = 1;
+        long sum = d;
+        while(n >= sum + sum) {
+            sum += sum;
+            multiplier += multiplier;
+        }
+        return multiplier + divideNegs(n - sum, d);
+    }
+}

@@ -1,0 +1,166 @@
+/**************** pre-oder traversal, recursive deserialization *********************/
+
+// average: O(nlogn)
+// worst case: unbalanced BST: O(n^2)
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        // pre-order traversal
+        String ans = iterTraversal(root);
+        //System.out.println(ans);
+        return ans;
+    }
+    
+    // private String recurTraversal(TreeNode root) {
+    //     StringBuilder builder = new StringBuilder();
+    //     if(root == null) {
+    //         return "";
+    //     }
+    //     builder.append(String.valueOf(root.val) + " ");
+    //     builder.append(recurTraversal(root.left));
+    //     builder.append(recurTraversal(root.right));
+    //     return builder.toString();
+    // }
+    
+    private String iterTraversal(TreeNode root) {
+        if(root == null) return "";
+        StringBuilder builder = new StringBuilder();
+        
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        stack.push(root);
+        while(!stack.empty()) {
+            TreeNode cur = stack.pop();
+            builder.append(String.valueOf(cur.val) + " ");
+            if(cur.right != null) {
+                stack.push(cur.right);
+            }
+            if(cur.left != null) {
+                stack.push(cur.left);
+            }
+        }
+        return builder.toString().trim();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data == null || data.isEmpty()) return null;
+        
+        String[] nodes = data.split(" ");
+        final int size = nodes.length;
+        
+        // convert to int values.
+        int[] vals = new int[size];
+        for(int i = 0; i < size; i++) {
+            vals[i] = Integer.valueOf(nodes[i]);
+        }
+        
+        return deserialize(vals, 0, size-1);
+    }
+    
+    private TreeNode deserialize(int[] vals, int l, int h) {
+        if(l > h) return null;
+        
+        TreeNode root = new TreeNode(vals[l]);
+        if(l == h) {
+            return root;
+        }
+        
+        int m = l+1;
+        while (m <= h) {
+            if(vals[m] <= root.val) {
+                m++;
+            } else {
+                break;
+            }
+        }
+        root.left = deserialize(vals, l+1, m-1);
+        root.right = deserialize(vals, m, h);
+        return root;
+    }
+}
+
+/***************************** Best Solution *********************************/
+// O(N)
+
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        // pre-order traversal
+        return iterTraversal(root);
+    }
+    
+    private String iterTraversal(TreeNode root) {
+        if(root == null) return "";
+        StringBuilder builder = new StringBuilder();
+        
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        stack.push(root);
+        while(!stack.empty()) {
+            TreeNode cur = stack.pop();
+            builder.append(String.valueOf(cur.val) + " ");
+            if(cur.right != null) {
+                stack.push(cur.right);
+            }
+            if(cur.left != null) {
+                stack.push(cur.left);
+            }
+        }
+        return builder.toString().trim();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(data == null || data.isEmpty()) return null;
+        
+        String[] nodes = data.split(" ");
+        final int size = nodes.length;
+        
+        // convert to int values.
+        int[] vals = str2IntArr(nodes);
+        
+        int[] p = new int[1];
+        p[0] = 0;
+        
+        return deserialize(vals, p, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+    
+    private int[] str2IntArr(final String[] ss) {
+        final int size = ss.length;
+        int[] vals = new int[size];
+        
+        for(int i = 0; i < size; i++) {
+            vals[i] = Integer.valueOf(ss[i]);
+        }
+        return vals;
+    }
+    
+    private TreeNode deserialize(final int[] vals, int[] p, final int min, final int max) {
+        if(p[0] >= vals.length) {
+            return null;
+        }
+        
+        final int val = vals[p[0]];
+        if(val < min || val > max) {
+            return null;
+        }
+        
+        TreeNode root = new TreeNode(val);
+        p[0]++;
+        
+        root.left = deserialize(vals, p, min, val);
+        root.right = deserialize(vals, p, val, max);
+        return root;
+    }
+}

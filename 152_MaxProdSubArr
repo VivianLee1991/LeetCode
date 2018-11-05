@@ -1,0 +1,50 @@
+/************************ Memory Limit Exceeded **********************************/
+class Solution {
+    public int maxProduct(int[] nums) {
+        final int n = nums.length;
+        int max = nums[0];
+        
+        int[][] products = new int[n][n];  // large space consumes here
+        for(int i = 0; i < n; i++) {
+            products[i][i] = nums[i];
+            max = Math.max(max, products[i][i]);
+        }
+        
+        for(int j = 0; j < n; j++) {
+            for (int i = j-1; i >= 0; i--) {
+                if(i+1 > j-1) {
+                    products[i][j] = nums[i]*nums[j];
+                } else {
+                    products[i][j] = nums[i]*products[i+1][j-1]*nums[j];
+                }              
+                max = Math.max(max, products[i][j]);
+            }
+        }
+        return max;
+    }
+}
+
+/************************ Optimized DP **********************************/
+
+public class Solution {
+    public int maxProduct(int[] nums) {
+        int p = 1; // max product with current num as the last multiplier, could be positive
+        int n = 1; // min product with current num as the last multiplier, could be negative
+        // p >= n
+        
+        int max = Integer.MIN_VALUE;
+        
+        for(int num : nums) {
+            if(num >= 0) {
+                p = Math.max(p*num, num);
+                n = Math.min(n*num, num);
+            } else {
+                int tmp = p;
+                p = Math.max(n*num, num);
+                n = Math.min(tmp*num, num);
+            }
+            max = Math.max(p, max);
+        }
+        return max;
+    }
+}

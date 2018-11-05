@@ -1,0 +1,66 @@
+/********************** sort by start time and merge *************************/
+
+/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+class Solution {
+    public List<Interval> merge(List<Interval> intervals) {
+        Collections.sort(intervals, (i1, i2) -> i1.start - i2.start);
+        
+        List<Interval> merged = new LinkedList<>();
+        if(intervals == null) {
+            return merged;
+        }
+        
+        while(!intervals.isEmpty()) {
+            Interval cur = intervals.remove(0);
+            
+            if(intervals.size() > 0 && overlapped(cur, intervals.get(0))){ // overlap
+                Interval next = intervals.get(0);
+                next.start = cur.start;
+                next.end = Math.max(next.end, cur.end);
+            } else {
+                merged.add(cur);
+            }
+        }
+        return merged;
+    }
+    
+    private boolean overlapped(Interval fst, Interval sec) {
+        return sec.start <= fst.end;
+    }
+}
+
+/********************** sort by start time and merge (not mutating input intervals)*************************/
+
+class Solution {
+    public List<Interval> merge(List<Interval> intervals) {
+        Collections.sort(intervals, (i1, i2) -> i1.start - i2.start);
+        
+        List<Interval> merged = new LinkedList<>();
+        if(intervals == null || intervals.size() == 0) {
+            return merged;
+        }
+        
+        int start = intervals.get(0).start;
+        int end   = intervals.get(0).end;
+        for(Interval next : intervals) {
+            if(next.start <= end) { // overlap
+                end = Math.max(end, next.end);
+            } else {
+                merged.add(new Interval(start, end));
+                start = next.start;
+                end = next.end;
+            }
+        }
+        // consider the last case
+        merged.add(new Interval(start, end));
+        return merged;
+    }
+}

@@ -1,0 +1,25 @@
+
+/***************************** Best Solution *********************************/
+
+class Solution {
+    private int max = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        longestPath(root);
+        return max;
+    }
+    
+    private int longestPath(TreeNode root) { // start from root
+        if (root == null) {
+            return -1;
+        }
+        int leftPath = longestPath(root.left);
+        int rightPath = longestPath(root.right);
+        
+        int diameter = 1 + leftPath + 1 + rightPath;
+        if(diameter > max) {
+            max = diameter;
+        }
+        return 1 + Math.max(leftPath, rightPath);
+    }
+}

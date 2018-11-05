@@ -1,0 +1,137 @@
+/**************** Two Pointers, read from last *********************/
+
+class Solution {
+    public boolean backspaceCompare(String S, String T) {
+        int i = S.length()-1;
+        int j = T.length()-1;
+        int delete1 = 0;
+        int delete2 = 0;
+        char s = 0;
+        char t = 0;
+        
+        while(i >= 0 || j >= 0) {
+
+            // move pointer for S
+
+            if(i < 0) {
+                s = 0;
+            } else {
+                if (S.charAt(i) != '#') { 
+                    s = S.charAt(i);
+                } else {
+                    while(S.charAt(i) == '#') {
+                       while(i >= 0) {
+                           if(S.charAt(i) == '#') { delete1++; }
+                           else { delete1--; }
+                           i--;
+                           if(delete1 == 0) break;
+                       }
+                       if(i == -1) break; 
+                    }
+                    s = (i == -1 ? 0 : S.charAt(i));
+                }
+            }
+            
+	    // move pointers for T
+
+            if(j < 0) {
+                t = 0;
+            } else {
+                if (T.charAt(j) != '#') { 
+                    t = T.charAt(j);
+                } else {
+                    while(T.charAt(j) == '#') {
+                       while(j >= 0) {
+                           if(T.charAt(j) == '#') { delete2++; }
+                           else { delete2--; }
+                           j--;
+                           if(delete2 == 0) break;
+                       }
+                       if(j == -1) break; 
+                    }
+                    t = (j == -1 ? 0 : T.charAt(j));
+                }
+            }
+            
+            if(s != t) return false;
+            i--;
+            j--;
+        }
+        return true;
+    }
+}
+
+
+/******************* Simplified Two Pointers ****************/
+
+class Solution {
+    public boolean backspaceCompare(String S, String T) {
+        int i = S.length()-1;
+        int j = T.length()-1;
+        int delete1 = 0;
+        int delete2 = 0;
+        char s = 0;
+        char t = 0;
+        
+        while(i >= 0 || j >= 0) {
+            // move pointer for S
+            while(i >= 0 && !(S.charAt(i) != '#' && delete1 == 0)) {
+                if(S.charAt(i) == '#') {
+                    delete1++;
+                } else {
+                    delete1--;
+                }
+                i--;
+            }
+            s = (i >= 0 ? S.charAt(i) : 0);
+            
+            // move pointer for T
+            while(j >= 0 && !(T.charAt(j) != '#' && delete2 == 0)) {
+                if(T.charAt(j) == '#') {
+                    delete2++;
+                } else {
+                    delete2--;
+                }
+                j--;
+            }
+            t = (j >= 0 ? T.charAt(j) : 0);
+            
+            if(s != t) return false;
+            i--;
+            j--;
+        }
+        return true;
+    }
+}
+
+/****************** StringBuilder, read from front ******************/
+
+class Solution {
+    public boolean backspaceCompare(String S, String T) {
+        StringBuilder sb = new StringBuilder();
+        StringBuilder tb = new StringBuilder();
+        
+        for(int i = 0; i < S.length(); i++) {
+            char s = S.charAt(i);
+            if(s != '#') {
+                sb.append(s);
+            } else {
+                if(sb.length() > 0) {
+                    sb.deleteCharAt(sb.length()-1);
+                }
+            }
+        }
+        
+        for(int i = 0; i < T.length(); i++) {
+            char t = T.charAt(i);
+            if(t != '#') {
+                tb.append(t);
+            } else {
+                if(tb.length() > 0) {
+                    tb.deleteCharAt(tb.length()-1);
+                }
+            }
+        }
+        return sb.toString().equals(tb.toString());
+    }
+}

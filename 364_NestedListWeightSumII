@@ -1,0 +1,51 @@
+/***************************** BFS Solution *********************************/
+
+class Solution {
+    public int depthSumInverse(List<NestedInteger> nestedList) {
+        if(nestedList == null) return 0;
+        
+        int sum = 0;
+        int unweight = 0;
+        Queue<NestedInteger> queue = new LinkedList<>(nestedList);
+        
+        while(!queue.isEmpty()) {
+            int tmp = 0;
+            int n = queue.size();
+            for(int i = 0; i < n; i++) {  // in every loop, it will check the condition again
+                NestedInteger ni = queue.poll();
+                if(ni.isInteger()) {
+                    tmp += ni.getInteger();
+                } else {
+                    queue.addAll(ni.getList());
+                }
+            }
+            unweight += tmp;
+            sum += unweight;
+        }
+        return sum;
+    }
+}
+
+/***************************** Best Solution *********************************/
+
+class Solution {
+    public int depthSumInverse(List<NestedInteger> nestedList) {
+        if(nestedList == null) return 0;
+        int unweight = 0;
+        int weight = 0;
+        
+        while(!nestedList.isEmpty()) {
+            List<NestedInteger> nextLayer = new LinkedList<>();
+            for(NestedInteger ni : nestedList) {
+                if(ni.isInteger()) {
+                    unweight += ni.getInteger();
+                } else {
+                    nextLayer.addAll(ni.getList());
+                }
+            }
+            weight += unweight;
+            nestedList = nextLayer;
+        }
+        return weight;
+    }
+}

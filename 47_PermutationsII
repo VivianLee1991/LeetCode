@@ -1,0 +1,73 @@
+/*********************** backtracking (wrong) **********************/
+
+class Solution {
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if(nums == null || nums.length == 0) return ans;
+        Arrays.sort(nums);
+        backTrack(ans, 0, nums.length, nums);
+        return ans;
+    }
+    
+    private void backTrack(List<List<Integer>> ans, int i, int j, final int[] nums) {
+        if(i == j-1) {
+            ans.add(toList(nums));
+            System.out.printf("****\n");
+        }
+        
+        for(int k = i; k < j; k++) {
+            if(k > i && nums[k] == nums[k-1]) continue;
+            swap(nums, k, i);
+            backTrack(ans, i+1, j, nums);
+            swap(nums, k, i);
+            System.out.printf("%d\t", i);
+            for(int p = 0; p < nums.length; p++) {
+                System.out.printf("%d\t", nums[p]);
+            }
+            System.out.println();
+        }
+    }
+    
+    private List<Integer> toList(int[] nums) {
+        List<Integer> ans = new ArrayList<>();
+        for(int num : nums) {
+            ans.add(num);
+        }
+        return ans;
+    }
+    
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+}
+
+/*********************** backtracking (correct) **********************/
+
+class Solution {
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> ans = new LinkedList<List<Integer>>();
+        Arrays.sort(nums);
+        backtrack(ans, nums, new ArrayList<Integer>(), new int[nums.length]);
+        return ans;
+    }
+    
+    private void backtrack(List<List<Integer>> ans, int[] nums, List<Integer> tmp, int[] used) {
+        if(tmp.size() == nums.length) {
+            ans.add(new ArrayList<Integer>(tmp));
+        }
+        
+        for(int i = 0; i < nums.length; i++) {
+            if(used[i] == 1) continue;
+            if(i > 0 && nums[i] == nums[i-1] && used[i-1] == 0) {
+                continue;
+            }
+            tmp.add(nums[i]);
+            used[i] = 1;
+            backtrack(ans, nums, tmp, used);
+            tmp.remove(tmp.size()-1);
+            used[i] = 0;
+        }
+    }
+}

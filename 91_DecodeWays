@@ -1,0 +1,92 @@
+class Solution {
+    public int numDecodings(String s) {
+        if(s == null || s.isEmpty()) return 0;
+        
+        final int n = s.length();
+        int[] ways = new int[n];
+        
+        // initialization
+        if(nonzero(s, 0)) {
+            ways[0] = 1;
+        } else {
+            return 0;  // leading 0 can not be decoded.
+        }
+        
+        if(n > 1) {
+            if(nonzero(s, 1)) ways[1]++;
+            if(valid2Digits(s, 0)) ways[1]++;
+        }
+            
+        for(int i = 2; i < n; i++) {
+            //ways[i] = ways[i-1] + ways[i-2];
+            if(nonzero(s, i)) {
+                ways[i] += ways[i-1];
+            }
+            if(valid2Digits(s, i-1)) {
+                ways[i] += ways[i-2];
+            }
+            if(ways[i] == 0) return 0;  // no way to decode last two chars
+        }
+        return ways[n-1];
+    }
+    
+    private boolean nonzero(String s, int index) {
+        return s.charAt(index) != '0';
+    }
+    
+    private boolean valid2Digits(String s, int index) { // digit at index and (index+1)
+        int num = 10 * (s.charAt(index) - '0') + s.charAt(index+1) - '0';
+        return num >= 10 && num <= 26;
+    }
+}
+
+/****************** DP constant space *********************/
+
+class Solution {
+    public int numDecodings(String s) {
+        if(s == null || s.isEmpty()) return 0;
+        
+        final int n = s.length();
+        int pprev = 0;
+        int prev = 0;
+        int cur = 0;
+        
+        // initialization
+        if(nonzero(s, 0)) {
+            pprev = 1;
+            cur = pprev;
+        } else {
+            return 0;  // leading 0 can not be decoded.
+        }
+        
+        if(n > 1) {
+            if(nonzero(s, 1)) prev++;
+            if(valid2Digits(s, 0)) prev++;
+            cur = prev;
+        }
+            
+        for(int i = 2; i < n; i++) {
+            //ways[i] = ways[i-1] + ways[i-2];
+            cur = 0;
+            if(nonzero(s, i)) {
+                cur += prev;
+            }
+            if(valid2Digits(s, i-1)) {
+                cur += pprev;
+            }
+            if(cur == 0) return 0;  // no way to decode last two chars
+            pprev = prev;
+            prev = cur;
+        }
+        return cur;
+    }
+    
+    private boolean nonzero(String s, int index) {
+        return s.charAt(index) != '0';
+    }
+    
+    private boolean valid2Digits(String s, int index) { // digit at index and (index+1)
+        int num = 10 * (s.charAt(index) - '0') + s.charAt(index+1) - '0';
+        return num >= 10 && num <= 26;
+    }
+}

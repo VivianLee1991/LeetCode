@@ -1,0 +1,118 @@
+// use hash map and double linked list
+// hash map maps key to list node
+// use dummy nodes(head, tail) to simplify list operation
+
+class LRUCache {
+
+    private Map<Integer,Node> cache;
+    private DoubleLinkedList queue;
+    private final int capacity;
+    
+    public LRUCache(int capacity) {
+        this.cache = new HashMap<Integer, Node>(capacity);
+        this.queue = new DoubleLinkedList();
+        this.capacity = capacity;
+    }
+    
+    public int get(int key) {
+        Node target = cache.get(key);
+        if(target == null) {
+            return -1;
+        }
+        // todo: move target to MRU (head)
+        moveToMRU(target);
+        return target.val;
+    }
+    
+    public void put(int key, int value) {
+        Node target = cache.get(key);
+        if(target != null) {  // already exists in cache
+            // todo: move target to MRU (head)
+            target.val = value;
+            moveToMRU(target);
+        } else {
+            if(cache.size() == capacity) { // reach capacity
+                // todo: delete LRU, delete from map 
+                deleteLRU();
+            }
+            // todo: add new pair to cache, add to MRU (new head)
+            addNewCache(key, value);
+        }
+    }
+    
+    // move the given target node to most recently used cache.
+    private void moveToMRU(Node target) {
+        if(queue.head.next.equals(target)) {
+            return;
+        }
+        queue.remove(target);
+        queue.addHead(target);
+    }
+    
+    // delete the LRU cache
+    private void deleteLRU() {
+        Node LRU = queue.deleteTail();
+        cache.remove(LRU.key);
+    }
+    
+    private void addNewCache(final int key, final int val) {
+        Node target = new Node(key, val);
+        cache.put(key, target);
+        queue.addHead(target);
+    }
+}
+
+class DoubleLinkedList {
+    Node head;  // dummy node, Most recently used cache - head.next
+    Node tail;  // Least recently used cache - tail.prev
+    
+    public DoubleLinkedList() {
+        head = new Node(-1, -1);
+        tail = new Node(-1, -1);
+        head.next = tail;
+        tail.prev = head;
+    }
+    
+    // add a new node to MRU cache
+    protected void addHead(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;    
+    }
+    
+    // remove node from list
+    protected Node remove(Node node) {
+        node.next.prev = node.prev;
+        node.prev.next = node.next;
+        node.prev = null;
+        node.next = null;
+        return node;
+    }
+    
+    // Invalid LRU cache
+    protected Node deleteTail() {
+        return remove(tail.prev);
+    }
+}
+
+class Node {
+    final int key; // used for search entry in map
+    int val;
+    Node prev;
+    Node next;
+    
+    public Node(final int key, final int val) {
+        this.key = key;
+        this.val = val;
+        this.prev = null;
+        this.next = null;
+    }
+}
+
+/**
+ * Your LRUCache object will be instantiated and called as such:
+ * LRUCache obj = new LRUCache(capacity);
+ * int param_1 = obj.get(key);
+ * obj.put(key,value);
+ */

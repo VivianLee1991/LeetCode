@@ -1,0 +1,33 @@
+/************* hash map to count sorted chars *******************/
+
+class Solution {
+    public String customSortString(String S, String T) { // O(S+T)
+        if(S == null || S.isEmpty() || T == null || T.isEmpty()) return T;
+        
+        Map<Character, Integer> sortMap = new HashMap<>();
+        for(int i = 0; i < S.length(); i++) {
+            sortMap.put(S.charAt(i), 0);
+        }
+        
+        StringBuilder unsorted = new StringBuilder();
+        StringBuilder sorted = new StringBuilder();
+        
+        for(int i = 0; i < T.length(); i++) {
+            char c = T.charAt(i);
+            if(sortMap.containsKey(c)) {
+                sortMap.put(c, sortMap.get(c) + 1);
+            } else {
+                unsorted.append(c);
+            }
+        }
+        
+        for(int i = 0; i < S.length(); i++) {
+            char c = S.charAt(i);
+            for(int j = 0; j < sortMap.get(c); j++) {
+                sorted.append(c);
+            }
+        }
+        
+        return sorted.append(unsorted).toString();   
+    }
+}
