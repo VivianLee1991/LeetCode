@@ -1,0 +1,65 @@
+/***************************** Heap *********************************/
+// time: O(nlogn), space: O(n)
+
+class Solution {
+    // in each meeting room, meeting intervals should not overlap
+    // how to get the min number -> fit as many meetings as possible in each room
+    
+    public int minMeetingRooms(Interval[] intervals) {  
+        if(intervals == null || intervals.length == 0) {
+            return 0;
+        }
+        Arrays.sort(intervals, (i1, i2) -> i1.start - i2.start); // sort by start time, O(nlogn)
+        PriorityQueue<Interval> rooms = new PriorityQueue<>(
+            (r1, r2) -> r1.end - r2.end); // Min queue for end time
+        rooms.offer(intervals[0]);
+        
+        for(int i = 1; i < intervals.length; i++) {  // O(n)
+            Interval head = rooms.peek();
+            Interval cur = intervals[i];
+            if(cur.start >= head.end) {  // O(logn)
+                rooms.poll();
+                head.end = cur.end;
+                rooms.offer(head);
+            } else {
+                rooms.offer(cur);
+            }
+        }
+        return rooms.size();
+    }
+}
+
+
+/************** Min num of rooms = Max num of meetings at any time *****************/
+
+class Solution {
+    // in each meeting room, meeting intervals should not overlap
+    // how to get the min number -> fit as many meetings as possible in each room
+    
+    // time: O(nlogn), space: O(n)
+    public int minMeetingRooms(Interval[] intervals) {  
+        if(intervals == null || intervals.length == 0) {
+            return 0;
+        }
+        final int n = intervals.length;
+        int[] starts = new int[n];
+        int[] ends = new int[n];
+        for(int i = 0; i < n; i++) {
+            starts[i] = intervals[i].start;
+            ends[i] = intervals[i].end;
+        }
+        
+        Arrays.sort(starts);  // O(nlogn)
+        Arrays.sort(ends);
+        int num = 0;
+        int indexEnd = 0;
+        for(int i = 0; i < n; i++) {  // O(n)
+            if(starts[i] < ends[indexEnd]) {
+                num++;
+            } else {
+                indexEnd++;
+            }
+        }
+        return num;
+    }
+}

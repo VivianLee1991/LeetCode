@@ -1,0 +1,53 @@
+class Solution {
+    public boolean isNumber(String s) {
+        if(s == null) return false;
+        
+        s = s.trim();
+        final int n = s.length();
+        
+        boolean hasDot = false;
+        boolean hasE = false;
+        boolean hasNum = false;
+        boolean hasNumAfterE = true;
+        
+        char prev = 0;
+        
+        for(int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            
+            if(isSign(c)) {  
+                // A sign is either the 1st char or right after 'e'
+                if(prev != 0 && prev != 'e') {
+                    return false;
+                } 
+            } else if (c == '.') {  
+                // A number should have at most one '.', and it should be before 'e'
+                if(hasDot || hasE) {
+                    return false;
+                }
+                hasDot = true;
+            } else if (c == 'e') { 
+                // A number should have at most one 'e', 
+                // and there should be a non-empty number before 'e',
+                // and a non-empty int num after 'e'.
+                if(hasE || !hasNum) {
+                    return false;
+                }
+                hasE = true;
+                hasNumAfterE = false;
+            } else if (Character.isDigit(c)) {
+                hasNum = true;
+                if(hasE) hasNumAfterE = true;
+            } else { 
+                // invalid char
+                return false;
+            }
+            prev = c;
+        }
+        return hasNum && hasNumAfterE;
+    }
+    
+    private boolean isSign(char c) {
+        return c == '+' || c == '-';
+    }
+}
