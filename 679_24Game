@@ -1,0 +1,53 @@
+class Solution {
+    private static final double POINT = 24.0;
+    private static final double ERROR = 0.001;
+    
+    public boolean judgePoint24(int[] nums) {
+        List<Double> list = new ArrayList<>();
+        for(int num : nums) {
+            list.add((double) num);
+        }
+        
+        return judge(list); 
+    }
+    
+    private boolean judge(List<Double> list) {
+        if(list.size() == 1) {
+            return reachPoint(list.get(0));
+        }
+        
+        final int n = list.size();
+        for(int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                double x = list.get(i);
+                double y = list.get(j);    
+                List<Double> candidates = generateRes(x, y);
+                
+                list.remove(j);  // Pay attention to the order!!
+                list.remove(i);
+                for(double candidate : candidates) {
+                    list.add(candidate);
+                    boolean res = judge(list);
+                    if(res) return true;
+                    list.remove(list.size()-1);
+                }
+                list.add(i, x);  // Backtracking, Pay attention to the order!!
+                list.add(j, y);
+            }
+        }
+        return false;
+    }
+    
+    private List<Double> generateRes(double x, double y) {
+        List<Double> candidates  = new LinkedList<>();
+        candidates.addAll(Arrays.asList(x + y, x - y, y - x, x * y));
+        
+        if(Math.abs(y) > ERROR) candidates.add(x / y);
+        if(Math.abs(x) > ERROR) candidates.add(y / x);
+        return candidates;
+    }
+    
+    private boolean reachPoint(double res) {
+        return Math.abs(res - POINT) < ERROR;
+    }
+}

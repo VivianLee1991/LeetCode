@@ -117,3 +117,42 @@ class Solution {
         return arr;
     }
 }
+
+
+/******************* Arrays.copyOfRange() *************************/
+class Solution {
+    public int[] intersect(int[] nums1, int[] nums2) {
+        // method1: convert array to hashmap, O(N)
+        // choose the map for the larger array, check whether the other map contains the same keys
+        
+        // method2: optimized method1 (space better)
+        // only convert the larger array to hash map, check each element of the other array. If the map contains the key or the value is > 0, deduct the value by 1.
+        
+        // method3: sort each array first, then use pointers to check each element
+        // O(NlogN), space saving
+        
+        // intersections must be smaller than nums1 and nums2
+        // p, q >= r
+
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        
+        int p = 0;
+        int q = 0;
+        int r = 0;
+        while(p < nums1.length && q < nums2.length) {
+            if(nums1[p] == nums2[q]) {
+                nums1[r] = nums1[p];
+                p++;
+                q++;
+                r++;
+            } else if (nums1[p] < nums2[q]) {
+                p++;
+            } else {
+                q++;
+            }
+        }
+        
+        return Arrays.copyOfRange(nums1, 0, r);
+    }
+}

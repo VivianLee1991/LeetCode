@@ -1,0 +1,44 @@
+/********************************* DFS, backtracking ***********************************/
+
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        if (board == null || board.length == 0 || board[0].length == 0) {
+            return false;
+        }
+        
+        final int m = board.length;
+        final int n = board[0].length;
+        StringBuilder builder = new StringBuilder(word);
+        
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(dfs(board, builder, i, j)) return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean dfs(char[][] board, StringBuilder word, int i, int j) {
+        if(word.length() == 0) return true;
+        
+        final int m = board.length;
+        final int n = board[0].length;
+        if(i < 0 || i >= m || j < 0 || j >= n) return false;
+        
+        char cur = word.charAt(0);
+        
+        if(board[i][j] == cur) {
+            board[i][j] = 0;  // clear current path
+            StringBuilder subword = word.deleteCharAt(0);
+            
+            boolean res = dfs(board, subword, i+1, j) || dfs(board, subword, i-1, j)
+                || dfs(board, subword, i, j+1) || dfs(board, subword, i, j-1);
+            
+            word.insert(0, cur);  // recover
+            board[i][j] = cur; 
+            return res;
+        } else {
+            return false;
+        }
+    }
+}
