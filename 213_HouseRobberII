@@ -1,0 +1,31 @@
+/*************** Break circle at house 0, use DP twice ********************/
+
+class Solution {
+    public int rob(int[] nums) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        final int n = nums.length;
+        if(n == 1) {
+            return nums[0];
+        }
+        
+        // if rob nums[0], can't rob nums[n-1], rob 0 ~ n-2
+        // else, rob 1 ~ n-1
+        return Math.max(rob(nums, 0, n-2), rob(nums, 1, n-1));
+    }
+    
+    private int rob(int[] nums, int start, int end) {        
+        int prepre = 0;
+        int pre = nums[start];
+        int cur = pre;
+        for(int i = start+1; i <= end; i++) {
+            cur = Math.max(prepre + nums[i], pre);
+            prepre = pre;
+            pre = cur;
+        }
+        
+        return cur;
+    }
+}

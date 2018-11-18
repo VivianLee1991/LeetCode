@@ -1,0 +1,49 @@
+/*************** Recursion ********************/
+// T(n) = 4t(n/4) + 2T(n/2) => n^2
+
+class Solution {
+    public int rob(TreeNode root) {
+        if(root == null) return 0;
+        return Math.max(rob(root, true), // root is robbed
+                        rob(root, false));  // root is not robbed
+    }
+    
+    // robbed: true if root is robbed, else false
+    private int rob(TreeNode root, boolean robbed) {
+        if(root == null) return 0;
+        if(robbed) {
+            return root.val + rob(root.left, false) + rob(root.right, false); 
+            // rob(root.left, false), rob(root.right, false) is also called in else {}
+        } else {
+            return rob(root.left) + rob(root.right);
+        }
+    }
+}
+
+
+/******************** memorization **************************/
+
+// How to analyze time complexity??
+
+// T(n) = 2T(n/2) + O(1) => O(N)
+
+class Solution {
+    public int rob(TreeNode root) {
+        int[] vals = robb(root);
+        return Math.max(vals[0], vals[1]);
+    }
+    
+    private int[] robb(TreeNode root) {
+        int[] vals = new int[2];
+        if(root == null) {
+            return vals;
+        }
+        
+        int[] leftVals = robb(root.left);
+        int[] rightVals = robb(root.right);
+        
+        vals[0] = root.val + leftVals[1] + rightVals[1]; // root is robded
+        vals[1] = Math.max(leftVals[0], leftVals[1]) + Math.max(rightVals[0], rightVals[1]); // root is not robbed
+        return vals;
+    }
+}
