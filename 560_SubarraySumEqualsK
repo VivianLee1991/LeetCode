@@ -1,0 +1,62 @@
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        final int n = nums.length;
+        int[] sums = new int[n+1];
+        sums[0] = 0;
+        for(int i = 1; i < n+1; i++) {
+            sums[i] = sums[i-1] + nums[i-1];
+        }
+        
+        // i < j
+        // subarr[i, j) = subarr[0, j) - subarr[0, i)
+        //              = sums[j] - sums[i]
+        //              = k
+        // sums[j] = sums[i] + k
+        
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        int count = 0;
+        
+        for(int i = 0; i <= n; i++) {
+            if(map.containsKey(sums[i])) {
+                count += map.get(sums[i]).size();
+            }
+            
+            map.computeIfAbsent(sums[i] + k, key -> new LinkedList<Integer>()).add(i);
+        }
+        return count;
+    }
+}
+
+
+
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        if(nums == null || nums.length == 0) {
+            return 0;
+        }
+        
+        // i < j
+        // subarr[i, j) = subarr[0, j) - subarr[0, i)
+        //              = sums[j] - sums[i]
+        //              = k
+        // sums[j] = sums[i] + k
+        
+        int count = 0;
+        final int n = nums.length;
+        int sum = 0;
+        
+        Map<Integer, Integer> map = new HashMap<>();  // key: target sum, val: num of appearance
+        map.put(sum+k, 1);
+        
+        for(int i = 1; i <= n; i++) {
+            sum += nums[i-1];
+            count += map.getOrDefault(sum, 0);     
+            map.put(sum + k, map.getOrDefault(sum+k, 0) + 1);
+        }
+        return count;
+    }
+}

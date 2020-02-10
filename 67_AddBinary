@@ -1,0 +1,22 @@
+class Solution {
+    public String addBinary(String a, String b) {
+        StringBuilder sum = new StringBuilder();
+        int carry = 0;
+        
+        // backward sum
+        int i = a.length()-1;
+        int j = b.length()-1;
+        while(i >= 0 || j >= 0) {
+            int aa = i >= 0 ? a.charAt(i) - '0' : 0;  // handle the case when one string is completed first
+            int bb = j >= 0 ? b.charAt(j) - '0' : 0;
+            sum.insert(0, aa^bb^carry);  // fast compute remainder
+            carry = (aa + bb + carry) >> 1;
+            i--;
+            j--;
+        }
+        if(carry != 0) {
+            sum.insert(0, carry);
+        }
+        return sum.toString();
+    }
+}

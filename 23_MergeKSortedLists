@@ -1,0 +1,36 @@
+
+/****************** Iterative **********************/
+
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        ListNode head = null;
+        ListNode tail = null;
+        if(lists == null || lists.length == 0) {
+            return head;
+        }
+        
+        PriorityQueue<ListNode> minHeap = new PriorityQueue<>((node1, node2) -> node1.val - node2.val);
+        
+        for(ListNode list : lists) {
+            if(list != null) {
+                minHeap.offer(list);
+            }
+        }
+        
+        while(!minHeap.isEmpty()) {
+            ListNode next = minHeap.poll();
+            if(head == null) {
+                head = next;
+                tail = next;
+            } else {
+                tail.next = next;
+                tail = next;
+            }
+            next = next.next;
+            if(next != null) {
+                minHeap.offer(next);
+            }
+        }
+        return head;
+    }
+}

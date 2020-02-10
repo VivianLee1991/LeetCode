@@ -1,0 +1,82 @@
+/****************** reverse list & recursion!! **********************/
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if(head == null) return null;
+        
+        // reverse first k nodes, get new head and tail (original head)
+        int i = k;
+        ListNode cur = head;
+        ListNode tail = head;
+        ListNode prev = null;
+        while(i > 0 && cur != null) {  // reverse list
+            ListNode next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+            i--;
+        }
+        
+        if(i == 0) {  // head has no less than k nodes
+            tail.next = reverseKGroup(cur, k);
+            return prev;
+        } else {  // less than k nodes, reverse back.
+            return reverseKGroup(prev, k-i);
+        }
+    }
+}
+
+
+/****************** Follow up **********************/
+// 第一次出现的k个元素reverse  然后下k个元素顺序保持不变， 下k个再reverse，下k个保持不变 
+
+class Solution {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if(head == null) return null;       
+        return reverseK(head, k, true);
+    }
+    
+    private ListNode reverseK(ListNode head, int k, boolean reversed) {
+        if(head == null) return null;
+        
+        if(!reversed) {  // no need to reverse
+            int count = k;
+            ListNode tail = head;
+            while(count > 1 && tail != null) {  // pay attention to the count stop-val
+                tail = tail.next;
+                count--;
+            }
+            
+            if(count == 1) {  // list is no less than k
+                tail.next = reverseK(tail.next, k, true);
+            }
+            return head;
+            
+        } else {  // reverse first k nodes
+            int count = k;
+            ListNode pre = null;
+            ListNode cur = head;
+            
+            while(count > 0 && cur != null) {
+                ListNode suc = cur.next;
+                cur.next = pre;
+                pre = cur;
+                cur = suc;
+                count--;
+            }
+            
+            if(count == 0) {
+                head.next = reverseK(cur, k, false);
+            }
+            return pre;
+        }
+    }
+}
